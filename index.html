@@ -56,6 +56,7 @@
   .subhead{margin-top:20px;padding-bottom:2px;color:var(--accent);font-weight:700;font-size:.95rem}
   html[lang="en"] .subhead{font-family:var(--head-en);font-size:.85rem}
   .tag{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:400;color:#fff;background:var(--veg);border-radius:4px;padding:1px 7px;vertical-align:middle}
+  html[lang="en"] .tag{display:table;margin:5px 0 0}
   .item.sep{margin-top:14px;border-top:1px dashed var(--line)}
   .item.far{margin-top:44px}
   .box{margin-top:22px;padding:2px 18px 4px;border:1.5px solid var(--teal);border-radius:18px;background:rgba(114,147,145,.12)}
@@ -101,7 +102,7 @@
 /* ============================================================
    ✏️ 只需要修改這個區塊 / Edit only this block
    - zh = 中文、en = English
-   - price 填數字即可；tag 可留空（例如 "辣" / "Spicy"）
+   - price 填數字即可；tag 可留空(例如 "辣" / "Spicy")
    - 下面是「範例」，請換成你自己的菜單
    ============================================================ */
 const CONFIG = {
@@ -137,7 +138,7 @@ const CONFIG = {
         { zh: "肉燥飯套餐",   en: "Minced Pork Rice Set", descZh: "含虱目魚肚湯", descEn: "with Milkfish Belly Soup", price: 150 },
         { zh: "肉燥什錦湯麵", en: "Minced Pork Assorted Soup Noodles", price: 90 },
         { zh: "肉燥飯",       en: "Minced Pork Rice",                  price: 60 },
-        { zh: "水餃（10顆）", en: "Dumplings (10 pcs)",                price: 60 },
+        { zh: "水餃(10顆)", en: "Dumplings (10 pcs)",                price: 60 },
         { zh: "虱目魚肚湯",   en: "Milkfish Belly Soup",               price: 100 },
         { zh: "海鮮鍋燒系列", en: "Seafood Hot Pot Series", descZh: "意麵/雞絲麵/冬粉/飯", descEn: "Yi Mein Noodles / Golden Thin Noodles / Glass Noodles / Rice", price: 90, box: true },
         { zh: "泡菜", en: "Kimchi",        price: 15, box: true, sub: { zh: "加料區", en: "Add-ons" } },
@@ -147,7 +148,7 @@ const CONFIG = {
     {
       name: { zh: "樂活蔬食", en: "Veggie Delights" },
       items: [
-        { zh: "素水餃（10顆）", en: "Vegetarian Dumplings (10 pcs)",    price: 60,  veg: true },
+        { zh: "素水餃(10顆)", en: "Vegetarian Dumplings (10 pcs)",    price: 60,  veg: true },
         { zh: "素什錦湯麵",     en: "Vegetarian Assorted Soup Noodles", price: 100, veg: true },
         { zh: "素泰式打拋豬",   en: "Vegetarian Thai Basil Minced \u201cPork\u201d", price: 150, veg: true }
       ]
@@ -156,8 +157,8 @@ const CONFIG = {
       name: { zh: "香酥點心", en: "Crispy Bites" },
       items: [
         { zh: "薯條",           en: "French Fries",                     price: 60 },
-        { zh: "撲克雞塊（6塊）", en: "Chicken Nuggets (6 pcs)",          price: 65 },
-        { zh: "雞米花（12塊）",  en: "Popcorn Chicken (12 pcs)",         price: 65 },
+        { zh: "撲克雞塊(6塊)", en: "Chicken Nuggets (6 pcs)",          price: 65 },
+        { zh: "雞米花(12塊)",  en: "Popcorn Chicken (12 pcs)",         price: 65 },
         { zh: "棒棒腿",         en: "Crispy Fried Chicken (Drumstick)", price: 65 }
       ]
     },
