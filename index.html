@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>菜單 Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ea; --ink:#1c1c1a; --muted:#6a6a62; --line:#d9d3c3; --accent:#3f6663; --teal:#729391; --card:#fffdf8; --veg:#3aa68d; --gutter:28px;
+    --body:Helvetica,"Helvetica Neue",Arial,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    --head-en:Montserrat,"Noto Sans TC",Helvetica,Arial,sans-serif;
+    --head-zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:110px}
+  html{background:#e4dfd2}
+  body{margin:0 auto;max-width:480px;min-height:100vh;box-shadow:0 0 0 1px var(--line);background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:400;line-height:1.6}
+  header{background:var(--teal);color:#fff}
+  .hin{padding:24px var(--gutter);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center}
+  .hin > div:first-child{grid-column:2}
+  .hin .lang{grid-column:3;justify-self:end}
+  h1,h2{font-weight:700}
+  html[lang="en"] h1,html[lang="en"] h2{font-family:var(--head-en)}
+  html[lang="zh-Hant"] h1,html[lang="zh-Hant"] h2{font-family:var(--head-zh)}
+  h1{font-size:1.9rem;margin:0;line-height:1.2}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .logo{display:block;height:88px;width:auto;margin:0 auto}
+  .sub{color:#e3ecea;font-size:.95rem;margin-top:6px}
+  .lang{display:flex;border:1.5px solid #fff;border-radius:999px;overflow:hidden;flex-shrink:0}
+  .lang button{border:0;background:transparent;color:#fff;padding:6px 10px;font:400 .85rem var(--body);cursor:pointer}
+  .lang button[aria-pressed="true"]{background:#fff;color:var(--accent)}
+  .lang button:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+  nav a:focus-visible{outline:3px solid var(--ink);outline-offset:1px}
+  nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+  nav div{display:flex;gap:8px;overflow-x:auto;padding:12px var(--gutter);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  nav div::-webkit-scrollbar{display:none}
+  nav div{cursor:grab;user-select:none;-webkit-user-select:none;overscroll-behavior-x:contain}
+  nav div.dragging{cursor:grabbing}
+  nav a{-webkit-user-drag:none}
+  nav::after{content:"";position:absolute;top:0;right:0;bottom:0;width:32px;background:linear-gradient(to right,rgba(247,243,234,0),var(--bg));pointer-events:none}
+  nav a{flex:0 0 auto;white-space:nowrap;line-height:1.4;text-decoration:none;color:var(--ink);padding:6px 14px;border:1px solid var(--line);border-radius:999px;font-size:.9rem;background:var(--card)}
+  main{padding:8px var(--gutter) 56px}
+  section{margin-top:32px}
+  h2{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:1.35rem;margin:0 0 6px;padding-bottom:8px;border-bottom:2px solid var(--teal)}
+  .item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .name{font-weight:400;font-size:1.1rem}
+  .desc{color:var(--muted);font-size:.88rem;margin-top:2px}
+  .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
+  .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1.1rem;color:var(--accent);white-space:nowrap}
+  .multi{display:flex;flex-shrink:0}
+  .multi span,.cols span{display:block;width:4.2rem;text-align:center}
+  .cols{display:flex;flex-shrink:0;color:var(--ink);font:700 .85rem var(--body)}
+  .subhead{margin-top:20px;padding-bottom:2px;color:var(--accent);font-weight:700;font-size:.95rem}
+  html[lang="en"] .subhead{font-family:var(--head-en);font-size:.85rem}
+  .tag{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:400;color:#fff;background:var(--veg);border-radius:4px;padding:1px 7px;vertical-align:middle}
+  .item.sep{margin-top:14px;border-top:1px dashed var(--line)}
+  .item.far{margin-top:44px}
+  .box{margin-top:22px;padding:2px 18px 4px;border:1.5px solid var(--teal);border-radius:18px;background:rgba(114,147,145,.12)}
+  .box .item:last-child{border-bottom:0}
+  .box .subhead{margin-top:14px}
+  @media (max-width:420px){
+    .logo{height:72px}
+    .lang button{padding:5px 8px;font-size:.8rem}
+  }
+  @media (max-width:350px){
+    :root{--gutter:20px}
+    .logo{height:60px}
+  }
+  footer{padding:0 var(--gutter) 40px;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<header><div class="hin">
+  <div>
+    <img class="logo" src="data:image/png;base64,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" alt="White Hall Cafeteria">
+    <h1 id="title" class="sr"></h1>
+  </div>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+    <button type="button" data-lang="en" aria-pressed="false">English</button>
+  </div>
+</div></header>
+<nav><div id="nav"></div></nav>
+<main id="menu"></main>
+<footer id="note"></footer>
+
+<script>
+/* ============================================================
+   ✏️ 只需要修改這個區塊 / Edit only this block
+   - zh = 中文、en = English
+   - price 填數字即可；tag 可留空（例如 "辣" / "Spicy"）
+   - 下面是「範例」，請換成你自己的菜單
+   ============================================================ */
+const CONFIG = {
+  title:    { zh: "白宮", en: "White Hall Cafeteria" },
+  note:     { zh: "如有食物過敏，請告知店員。", en: "Please tell our staff about any food allergies." },
+  currency: "$",
+  categories: [
+    {
+      name: { zh: "經典排餐", en: "Steak & Grill Classics" },
+      items: [
+        { zh: "酥炸香雞排", en: "Crispy Fried Chicken Cutlet", price: 150 },
+        { zh: "椒鹽花枝排", en: "Salt & Pepper Squid Cutlet",  price: 150 },
+        { zh: "日式唐揚雞", en: "Japanese Karaage Chicken",    price: 150 },
+        { zh: "泰式打拋豬", en: "Thai Basil Minced Pork",      price: 150 },
+        { zh: "單點主食",   en: "Main Dish Only",              price: 100, sep: true, far: true }
+      ]
+    },
+    {
+      name: { zh: "精選套餐", en: "Signature Set" },
+      items: [
+        { zh: "香辣椒麻雞", en: "Spicy Sichuan Pepper Chicken",       price: 180 },
+        { zh: "紅燒醬牛腩", en: "Braised Beef Brisket in Soy Sauce",  price: 180 },
+        { zh: "南洋咖哩雞", en: "Southeast Asian Curry Chicken",      price: 180 },
+        { zh: "香烤松阪豬", en: "Grilled Matsusaka Pork",             price: 180 },
+        { zh: "義式烤雞腿", en: "Italian-style Grilled Chicken Thigh", price: 180 },
+        { zh: "單點主食",   en: "Main Dish Only",                     price: 110, sep: true, far: true }
+      ]
+    },
+    {
+      name: { zh: "台味食堂", en: "Taiwanese Kitchen" },
+      items: [
+        { zh: "家常牛肉麵",   en: "Classic Taiwanese Beef Noodles",    price: 200 },
+        { zh: "肉燥飯套餐",   en: "Minced Pork Rice Set", descZh: "含虱目魚肚湯", descEn: "with Milkfish Belly Soup", price: 150 },
+        { zh: "肉燥什錦湯麵", en: "Minced Pork Assorted Soup Noodles", price: 90 },
+        { zh: "肉燥飯",       en: "Minced Pork Rice",                  price: 60 },
+        { zh: "水餃（10顆）", en: "Dumplings (10 pcs)",                price: 60 },
+        { zh: "虱目魚肚湯",   en: "Milkfish Belly Soup",               price: 100 },
+        { zh: "海鮮鍋燒系列", en: "Seafood Hot Pot Series", descZh: "意麵/雞絲麵/冬粉/飯", descEn: "Yi Mein Noodles / Golden Thin Noodles / Glass Noodles / Rice", price: 90, box: true },
+        { zh: "泡菜", en: "Kimchi",        price: 15, box: true, sub: { zh: "加料區", en: "Add-ons" } },
+        { zh: "加麵", en: "Extra Noodles", price: 15, box: true }
+      ]
+    },
+    {
+      name: { zh: "樂活蔬食", en: "Veggie Delights" },
+      items: [
+        { zh: "素水餃（10顆）", en: "Vegetarian Dumplings (10 pcs)",    price: 60,  veg: true },
+        { zh: "素什錦湯麵",     en: "Vegetarian Assorted Soup Noodles", price: 100, veg: true },
+        { zh: "素泰式打拋豬",   en: "Vegetarian Thai Basil Minced \u201cPork\u201d", price: 150, veg: true }
+      ]
+    },
+    {
+      name: { zh: "香酥點心", en: "Crispy Bites" },
+      items: [
+        { zh: "薯條",           en: "French Fries",                     price: 60 },
+        { zh: "撲克雞塊（6塊）", en: "Chicken Nuggets (6 pcs)",          price: 65 },
+        { zh: "雞米花（12塊）",  en: "Popcorn Chicken (12 pcs)",         price: 65 },
+        { zh: "棒棒腿",         en: "Crispy Fried Chicken (Drumstick)", price: 65 }
+      ]
+    },
+    {
+      name: { zh: "咖啡系列", en: "Coffee" },
+      cols: { zh: ["M", "L"], en: ["M", "L"] },
+      items: [
+        { zh: "美式咖啡", en: "Americano",  inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [55, 105] },
+        { zh: "拿鐵咖啡", en: "Latte",      inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [65, 125] },
+        { zh: "卡布奇諾", en: "Cappuccino", inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [65, null] }
+      ]
+    },
+    {
+      name: { zh: "手沖咖啡系列", en: "Pour Over Coffee" },
+      items: [
+        { zh: "天堂鳥",   en: "Sigri Estate", price: 130 },
+        { zh: "蝴蝶",     en: "Classico Butterfly", price: 130 },
+        { zh: "耶加雪菲", en: "Yirga Cheffe", price: 130 }
+      ]
+    },
+    {
+      name: { zh: "花果茶", en: "Italian Cuisine" },
+      cols: { zh: ["杯裝", "壺裝"], en: ["Cup", "Pot"] },
+      items: [
+        { zh: "舒壓淨茶", en: "Stress-Relief Herbal Tea", prices: [50, 90] },
+        { zh: "野莓果茶", en: "Wild Berry Fruit Tea", prices: [50, 90] }
+      ]
+    },
+    {
+      name: { zh: "精選特調", en: "Regimen Drinks" },
+      cols: { zh: ["M", "L"], en: ["M", "L"] },
+      items: [
+        { zh: "極品紅茶",   en: "Premium Black Tea",      inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [null, 35] },
+        { zh: "極品烏龍",   en: "Premium Oolong Tea",     inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [null, 35] },
+        { zh: "紅茶拿鐵",   en: "Black Tea Latte",        inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [45, 65] },
+        { zh: "烏龍拿鐵",   en: "Oolong Tea Latte",       inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [45, 65] },
+        { zh: "金萱茶",     en: "Jin Xuan Oolong Tea",    inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [60, null] },
+        { zh: "黃金柚子茶", en: "Golden Yuzu Tea",        inl: true, descZh: "冰/熱", descEn: "Hot/Iced", prices: [80, null] }
+      ]
+    }
+  ]
+};
+/* ============================================================ */
+
+let lang = "zh";
+try {
+  const saved = localStorage.getItem("menu-lang");
+  if (saved === "zh" || saved === "en") lang = saved;
+  else lang = (navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
+} catch (e) {
+  lang = (navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
+}
+
+function esc(s){return String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function itemHtml(it, L, D){
+  return `
+        ${it.sub ? `<div class="subhead">${esc(it.sub[L])}</div>` : ""}
+        <div class="item${it.sep ? " sep" : ""}${it.far ? " far" : ""}">
+          <div>
+            <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
+            ${it["desc"+D] && !it.inl ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
+          </div>
+          ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(CONFIG.currency + p)}</span>`).join("")}</div>` : `<div class="price">${esc(CONFIG.currency + it.price)}</div>`}
+        </div>`;
+}
+function itemsHtml(items, L, D){
+  let out = "", i = 0;
+  while (i < items.length) {
+    if (items[i].box) {
+      let g = "";
+      while (i < items.length && items[i].box) { g += itemHtml(items[i], L, D); i++; }
+      out += `<div class="box">${g}</div>`;
+    } else { out += itemHtml(items[i], L, D); i++; }
+  }
+  return out;
+}
+
+function render(){
+  const L = lang, D = L === "zh" ? "Zh" : "En";
+  document.documentElement.lang = L === "zh" ? "zh-Hant" : "en";
+  document.title = CONFIG.title[L] + (L === "zh" ? " 菜單" : " Menu");
+  document.getElementById("title").textContent = CONFIG.title[L];
+  document.getElementById("note").textContent = CONFIG.note[L];
+
+  document.querySelectorAll(".lang button").forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.lang === L ? "true" : "false"));
+
+  document.getElementById("nav").innerHTML = CONFIG.categories
+    .map((c,i)=>`<a href="#cat${i}">${esc(c.name[L])}</a>`).join("");
+
+  document.getElementById("menu").innerHTML = CONFIG.categories.map((c,i)=>`
+    <section id="cat${i}">
+      <h2><span>${esc(c.name[L])}</span>${c.cols ? `<span class="cols">${c.cols[L].map(x=>`<span>${esc(x)}</span>`).join("")}</span>` : ""}</h2>
+      ${itemsHtml(c.items, L, D)}
+    </section>`).join("");
+}
+
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem("menu-lang", lang); } catch (e) {}
+  render();
+}));
+
+/* 分類按鈕：手機可直接左右滑動；電腦可用滑鼠拖曳或滾輪 */
+(function(){
+  const bar = document.getElementById("nav");
+  let down = false, moved = false, startX = 0, startLeft = 0;
+  bar.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse") return;
+    down = true; moved = false; startX = e.clientX; startLeft = bar.scrollLeft;
+  });
+  window.addEventListener("pointermove", e => {
+    if (!down) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 4) { moved = true; bar.classList.add("dragging"); }
+    bar.scrollLeft = startLeft - dx;
+  });
+  window.addEventListener("pointerup", () => { down = false; bar.classList.remove("dragging"); });
+  bar.addEventListener("click", e => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+  bar.addEventListener("wheel", e => {
+    if (bar.scrollWidth <= bar.clientWidth) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { bar.scrollLeft += e.deltaY; e.preventDefault(); }
+  }, { passive: false });
+})();
+
+render();
+</script>
+</body>
+</html>
