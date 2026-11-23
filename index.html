@@ -56,6 +56,7 @@
   .subhead{margin-top:20px;padding-bottom:2px;color:var(--accent);font-weight:700;font-size:.95rem}
   html[lang="en"] .subhead{font-family:var(--head-en);font-size:.85rem}
   .tag{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:400;color:#fff;background:var(--veg);border-radius:4px;padding:1px 7px;vertical-align:middle}
+  .zhn{display:block;font-size:.9rem;line-height:1.4;color:#4d4d47;margin-top:1px}
   html[lang="en"] .tag{display:table;margin:5px 0 0}
   .item.sep{margin-top:14px;border-top:1px dashed var(--line)}
   .item.far{margin-top:44px}
@@ -219,7 +220,7 @@ function itemHtml(it, L, D){
         ${it.sub ? `<div class="subhead">${esc(it.sub[L])}</div>` : ""}
         <div class="item${it.sep ? " sep" : ""}${it.far ? " far" : ""}">
           <div>
-            <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
+            <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
             ${it["desc"+D] && !it.inl ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
           </div>
           ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(CONFIG.currency + p)}</span>`).join("")}</div>` : `<div class="price">${esc(CONFIG.currency + it.price)}</div>`}
