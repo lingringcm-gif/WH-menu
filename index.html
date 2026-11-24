@@ -48,6 +48,7 @@
   .item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
   .name{font-weight:400;font-size:1.1rem}
   .desc{color:var(--muted);font-size:.88rem;margin-top:2px}
+  .loading{color:var(--muted);text-align:center;padding:56px 0}
   .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
   .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
   .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1.1rem;color:var(--accent);white-space:nowrap}
@@ -258,6 +259,12 @@ function render(){
   document.querySelectorAll(".lang button").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.lang === L ? "true" : "false"));
 
+  if (!ready) {
+    document.getElementById("nav").innerHTML = "";
+    document.getElementById("menu").innerHTML = `<p class="loading">${L === "zh" ? "菜單載入中…" : "Loading menu…"}</p>`;
+    return;
+  }
+
   document.getElementById("nav").innerHTML = CONFIG.categories
     .map((c,i)=>`<a href="#cat${i}">${esc(c.name[L])}</a>`).join("");
 
@@ -339,22 +346,31 @@ function buildFromRows(rows){
   });
   return cats.filter(c => c.items.length);
 }
+let ready = !SHEET_CSV_URL;   // 有連動試算表時，先等讀到最新資料再顯示價格
 function loadSheet(){
   if (!SHEET_CSV_URL) return;
-  try {
-    const cached = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
-    if (cached && cached.length) CONFIG.categories = cached;
-  } catch (e) {}
+  const apply = cats => {
+    CONFIG.categories = cats;
+    try { localStorage.setItem("menu-sheet-cache", JSON.stringify(cats)); } catch (e) {}
+    ready = true; render();
+  };
+  const fallback = () => {            // 讀取失敗或太久：用上次成功的資料，再不行用內建菜單
+    if (ready) return;
+    try {
+      const c = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
+      if (c && c.length) CONFIG.categories = c;
+    } catch (e) {}
+    ready = true; render();
+  };
+  const timer = setTimeout(fallback, 4000);
   fetch(SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "_=" + Date.now(), { cache: "no-store" })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(t => {
+      clearTimeout(timer);
       const cats = buildFromRows(parseCSV(t));
-      if (!cats.length) return;
-      CONFIG.categories = cats;
-      try { localStorage.setItem("menu-sheet-cache", JSON.stringify(cats)); } catch (e) {}
-      render();
+      if (cats.length) apply(cats); else fallback();
     })
-    .catch(() => {});
+    .catch(() => { clearTimeout(timer); fallback(); });
 }
 
 loadSheet();
