@@ -48,6 +48,19 @@
   .item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
   .name{font-weight:400;font-size:1.1rem}
   .desc{color:var(--muted);font-size:.88rem;margin-top:2px}
+  .banner{background:var(--accent);color:#fff;overflow:hidden;white-space:nowrap;font-size:.92rem;line-height:1.2}
+  .banner[hidden]{display:none}
+  .banner .track{display:flex;width:max-content;padding:10px 0;animation:marquee 20s linear infinite}
+  .banner .grp{display:flex;flex-shrink:0}
+  .banner .unit{padding-right:3rem}
+  .banner:hover .track,.banner:active .track{animation-play-state:paused}
+  @keyframes marquee{to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){
+    .banner{white-space:normal;text-align:center}
+    .banner .track{animation:none;width:auto;display:block;padding:10px var(--gutter)}
+    .banner .grp+.grp{display:none}
+    .banner .unit{padding:0}
+  }
   .loading{color:var(--muted);text-align:center;padding:56px 0}
   .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
   .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
@@ -89,6 +102,7 @@
 </head>
 <body>
 
+<div id="banner" class="banner" hidden><div class="track"></div></div>
 <header><div class="hin">
   <div>
     <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOwAAADRCAYAAADPN15nAAAACXBIWXMAAC4jAAAuIwF4pT92AAAI+0lEQVR4nO3d23ajOhBFUXFG//8vc56cEMxF96pdWvOlOxmxwJhNScLAtu97QpWSDbcNWwss5T/rFRBVepTjqIgu/lmvgJiW4H1eS7VFNSpsPqokzBHY+Qg+qhHYPIQMLhDYOltqG4tyAEAVAvvuHK7t5v/AcAS2DAGFKQKbj7DCHOdh3xFUuEGFBYQQWEAIgQWEEFhACIEFhBBYQAiBBYQQWEAIgQWEEFhACIEFhBBYQAiBBYQQWEDIv1R3u5Kol5w9bYuo77kE28eYt+thuZu+X2+fTa/7LpcWkKX2A+Uu8cwbmS21U1wo2dbcYG6g2sCO+FCsP2jr5XtVs13YloMoV1hgOQQWEPJfYnz2ZuXt0+PhX+iopcJ6+EB6rYOH9wK88tIlJjBABi+BBZDhE9iVx2lPVt8uLe9/9W03BBWW7jiEtAa2x87e2gaBG4tK6QgVFiMQ8kG8ffkfPn0C+NabIaiDHSssG/svtse3uyfPtz6RHpl6VNg91X9Y1uNP6+WrIpxGooxhCR6WECWwwBLOXeItUa1S8tPl4+4LOqbcLaXXLHHNONb6wGC9/Ds9rpDpHdyeB47e2722vdm3srl7bdF6cFrHj5478qjgYtwBJ+uzijSG9Voxc4xad+Vt4tHI7bnntO8xsNZVYebysz6kDstAmxmf03FZt64CO2OHtd6JrJef0tx18PB+VVlsu9tl9hzDtnyB4ozZ6l9X27T2TobWvRc1PSe0Stu6/LyYdPLrKVy53+316O2g4eVUVu/Z55rP7Cu03sawllPtPZbfQ8n3ctVOpakYeaqo6TO7C+zIHdd6p7Fe/hMPBwzUKfnsqj/n3hXWcxi8q/0QCXlfHh8O97NO3rrERyvtiLNPJaGfqQdaT4G1DqjV8q3fN365P5jNDuyMDfK0DG8fCGHVNr1n9BRYdqax2L4oNqLCeqtiQA6L/bb4oO1pDHtlVhWi2kHCzMA+HcFW+P4yYjE5yL8FVrXyEE6ENKrCEhigv50v/+v2ItBP7dVP080aw7aMX3sEioqPELzPErcgpAgnJ7Cqd/UHwolcYYFwZgS2x/nXlnGs9flfoJeNWWKgjssvTnyoViLG0cghs3+P7hITGKAjy0kn66Oa9fKBYkqzxAQMnszuPb5ewA7Al70ksFQ4ROZ5/za/a6L1xrFePmKYfo8yusRYycyn0PVwXtdNLbBURoxUs39NfbZvaWAJDFSNfhjz6Pa2lGy6xNaht14++soJS0mgrK9OK36gM2Cp9wH1axw4cB1aQvs0vv5ZH778j5k+O+SoUG4Xv6tV+1Dx0vf4tow/7SgGlqeza7J+TEtKeg8d+1rfmi5xy5u2Hj9aL39VHp6qXtOm5f5yuWzGsBhhP/w78mnmM9raGl9fu8xLBBajvE6gTNJreS4eG6M4hsU6Pjuvhyp9bG/EeDxrXWsrrPV4wHr5q7GuUqXd0tHd2F7tb6mwrW3fmXANYNakTsvOstIBs+bcbxa6xChRe0ptpbCmNPD9MumEUp66psuhwqIGITRChQWEEFhACIGFhR6nJtTuHtEFgcXRjBDsp397tbcEAosPi6tpCG0hlVliL19Nu+J53XKN2OH31HaPpNLX1i5PChV2TT2upsltv+Z1Na+tfY0UAruuUVfT1HZ76R5nILA4Ct+lVEdgYyBof4WtsgQ2jtbQRgt9yNASWKQUL6xhEdhYvF3obS1clVU5D4sykUO4NCosIITAIrpQ3WK6xJjhKTShAjUaFRYQQmCxgjBVnMACQggsIIRJp9ieuoKcqxVEYONoufY0JQIsgS6xtj31uwi9VzvWz+G5E2LiiQqraeTOV3uLFkxAhdUzq1JYPviKg8UNAqtldrfOIrSE9QGB1dFyd8aWELSGNnfZ0S/164IxrIYez389/i7EBMyKqLD+jXhYc809f+EAgfVt1pPVIYLArmtGlS05t7vkw61KEVi/qK74En3SiSM2QqHCxkB1XQSB9YmeAS5F7xKromLiEhV2XVRxQVTY2AhlMARWH6FcSPTAzhgLWgSGkC4qemCjIaiLY9JJB2EFFVZEr7CehwgcBMQQWP8sb9UCZwisby13mUBAjGH9Iqz4QmBjIazBEVifaqorYV0AgQWEENgYqK6LILD+cG4UtwgsIITAAkIILCCEwAJCCKw/zPjiFoGNgZnlRRBY9MABYxICG4dVaPbTvxiIwPpUO47lwVPBEVi/RoS2Naj76f/Hn5ksm4AL2GMaWT2pzIaosL6pVC2V9ZRHYP0jDPhBYDVsaUxwe7TLAWUiAqulV3DP7dS2OTOsI2e2ZWbNmXTS9AlKyU72Fq6toL2oVXVPzt8bgdXWe+fyurPOmvX2+v5/qATW/YbEMHdhLekRHNvaTj9LUQks1vEUoh4HbrmQHjHphJGUekYS60pgoWJkoCTCmhKBxXi9TkONalsKgfVH5pxggZZg5ZyOaiEVegLrS7SgHtUEI/c1tW1LhTUlZok9iRzWj5wvfLR+6+ptO8qF9IjA+nDeyaR3qgxMIFUisO1qTuCnytdgcYxh/QldIdCGwPZByDAFgfWF4OMRge1nqfOBsMGkU18jrlMFfhDYMd4u4SKkqEJgxyOc6IYxLCCEwAJCCCwghMACQggsIITAAkIILCCEwAJCCCwghMACQggsIITA2ot4W9MnK73X7vjy/6+nhy6NXGbtPaGUuX+so1cE9jcsVzsQjzmEK6sH9ims6ry+N2/rI2XlMazXHRq4tWqFze3q5oa55K4S57/NHc/l3mz8qv2nvy9t/+rvz+Pwt+HFiO26hJUrbC+fwNU+ByY3rFv6u5ynSbLt4efW9o/tHl9/9fu7v89Rul2XsGqF/WjdGVpnlmsqa07FLOnu11bko96hspixl0CFrTdjDNwjTKPaL51Bz/175hYerF5hn3g6V/gZI45an5b2S1/jZZtKWr3CKn1h4e3Wqd7bRwerBrZ0xjRH6WtKKs1++n/O+PXu59b2Z+PgcbDt+9Lbo+XBwrUPDi4do9Wc2ig5hVLavsXf5742vNUDa8FbBYOQVbvEgCQCOxfVFU0ILCCEwM5FdUWT/wHB7HULdZrETQAAAABJRU5ErkJggg==" alt="White Hall Cafeteria">
@@ -277,6 +291,20 @@ function render(){
     return;
   }
 
+  const banner = document.getElementById("banner");
+  const msgs = (CONFIG.announcements || []).map(a => a[L]).filter(Boolean);
+  if (!msgs.length) { banner.hidden = true; }
+  else {
+    const track = banner.firstElementChild;
+    const unit = `<span class="unit">${esc(msgs.join("　•　"))}</span>`;
+    track.innerHTML = `<div class="grp">${unit}</div>`;
+    banner.hidden = false;
+    const g = track.firstElementChild;
+    for (let n = 1; g.scrollWidth < banner.clientWidth * 1.2 && n < 12; n++) g.insertAdjacentHTML("beforeend", unit);
+    track.insertAdjacentHTML("beforeend", g.outerHTML);
+    track.style.animationDuration = Math.max(10, g.scrollWidth / 55) + "s";
+  }
+
   document.getElementById("nav").innerHTML = CONFIG.categories
     .map((c,i)=>`<a href="#cat${i}">${esc(c.name[L])}</a>`).join("");
 
@@ -331,12 +359,16 @@ function parseCSV(text){
   return rows;
 }
 function buildFromRows(rows){
-  const cats = [], map = {};
+  const cats = [], map = {}, ann = [];
   const P = v => { v = (v || "").trim().replace(/^\$\s*/, ""); return v === "" ? null : v; };
   const split = v => v.split(/[|｜/、,，]/).map(x => x.trim());
   rows.slice(1).forEach(r => {
     const [catZh, catEn, zh, en, p1, p2, dZh, dEn, hide, style, colsZh, colsEn, subZh, subEn] = r.map(x => (x || "").trim());
     if (!catZh && !catEn) return;
+    if (/^(公告|跑馬燈|announcement|marquee)$/i.test(catZh) || /^(announcement|marquee)$/i.test(catEn)) {
+      if ((zh || en) && !/^(n|no|否|x|隱藏|隐藏|hide|false|0)$/i.test(hide)) ann.push({ zh: zh || en, en: en || zh });
+      return;
+    }
     const key = catZh + "|" + catEn;
     let c = map[key];
     if (!c) { c = map[key] = { name: { zh: catZh || catEn, en: catEn || catZh }, items: [] }; cats.push(c); }
@@ -356,7 +388,7 @@ function buildFromRows(rows){
     if (c.cols) it.prices = [P(p1), P(p2)]; else it.price = P(p1);
     c.items.push(it);
   });
-  return cats.filter(c => c.items.length);
+  return { cats: cats.filter(c => c.items.length), ann };
 }
 let ready = !(SHEET_LIVE_CSV_URL || SHEET_CSV_URL);   // 連動試算表時，先等讀到最新資料再顯示價格
 async function fetchCats(url){
@@ -366,29 +398,29 @@ async function fetchCats(url){
   if (/^\s*</.test(text)) throw new Error("not csv");        // 讀到登入頁或錯誤頁
   const rows = parseCSV(text);
   if (!rows[0] || rows[0].length < 9) throw new Error("bad header");
-  const cats = buildFromRows(rows);
-  if (!cats.length) throw new Error("empty");
-  return cats;
+  const res = buildFromRows(rows);
+  if (!res.cats.length) throw new Error("empty");
+  return res;
 }
 async function loadSheet(){
   const urls = [SHEET_LIVE_CSV_URL, SHEET_CSV_URL].filter(Boolean);
   if (!urls.length) return;
-  const apply = cats => {
-    CONFIG.categories = cats;
-    try { localStorage.setItem("menu-sheet-cache", JSON.stringify(cats)); } catch (e) {}
+  const apply = res => {
+    CONFIG.categories = res.cats; CONFIG.announcements = res.ann;
+    try { localStorage.setItem("menu-sheet-cache", JSON.stringify({ c: res.cats, a: res.ann })); } catch (e) {}
     ready = true; render();
   };
   const fallback = () => {            // 都讀不到：用上次成功的資料，再不行用內建菜單
     if (ready) return;
     try {
       const c = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
-      if (c && c.length) CONFIG.categories = c;
+      if (c && c.c && c.c.length) { CONFIG.categories = c.c; CONFIG.announcements = c.a || []; }
     } catch (e) {}
     ready = true; render();
   };
   const timer = setTimeout(fallback, 5000);
   for (const u of urls) {
-    try { const cats = await fetchCats(u); clearTimeout(timer); apply(cats); return; } catch (e) {}
+    try { const res = await fetchCats(u); clearTimeout(timer); apply(res); return; } catch (e) {}
   }
   clearTimeout(timer); fallback();
 }
