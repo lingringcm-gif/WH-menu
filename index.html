@@ -204,6 +204,14 @@ const CONFIG = {
 };
 /* ============================================================ */
 
+/* ============================================================
+   🔗 Google 試算表連動
+   把試算表「發布到網路」(CSV) 的網址貼在下面的引號裡。
+   留空 = 只使用上面內建的菜單。
+   ============================================================ */
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDbvzO5IMg-_bfP5sc8e51YlVp1Z0VagaHOzdbV55NvUkKjluiZN-7YuzdqW0H4bA5zAomXeyBh0Bx/pub?gid=1090735488&single=true&output=csv";
+
+
 let lang = "zh";
 try {
   const saved = localStorage.getItem("menu-lang");
@@ -213,6 +221,7 @@ try {
   lang = (navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
 }
 
+function money(p){ return /^[\d.,]+$/.test(String(p)) ? CONFIG.currency + p : String(p); }
 function esc(s){return String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 
 function itemHtml(it, L, D){
@@ -223,7 +232,7 @@ function itemHtml(it, L, D){
             <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
             ${it["desc"+D] && !it.inl ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
           </div>
-          ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(CONFIG.currency + p)}</span>`).join("")}</div>` : `<div class="price">${esc(CONFIG.currency + it.price)}</div>`}
+          ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(money(p))}</span>`).join("")}</div>` : `<div class="price">${it.price == null || it.price === "" ? "" : esc(money(it.price))}</div>`}
         </div>`;
 }
 function itemsHtml(items, L, D){
@@ -286,6 +295,67 @@ document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click
   }, { passive: false });
 })();
 
+/* ---------- 讀取 Google 試算表 ---------- */
+function parseCSV(text){
+  const rows = []; let row = [], cur = "", q = false;
+  text = text.replace(/^\uFEFF/, "");
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i+1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i+1] === "\n") i++; row.push(cur); cur = ""; rows.push(row); row = []; }
+    else cur += c;
+  }
+  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+function buildFromRows(rows){
+  const cats = [], map = {};
+  const P = v => { v = (v || "").trim().replace(/^\$\s*/, ""); return v === "" ? null : v; };
+  const split = v => v.split(/[|｜/、,，]/).map(x => x.trim());
+  rows.slice(1).forEach(r => {
+    const [catZh, catEn, zh, en, p1, p2, dZh, dEn, hide, style, colsZh, colsEn, subZh, subEn] = r.map(x => (x || "").trim());
+    if (!catZh && !catEn) return;
+    const key = catZh + "|" + catEn;
+    let c = map[key];
+    if (!c) { c = map[key] = { name: { zh: catZh || catEn, en: catEn || catZh }, items: [] }; cats.push(c); }
+    if (colsZh || colsEn) c.cols = { zh: split(colsZh || colsEn), en: split(colsEn || colsZh) };
+    if (!zh && !en) return;
+    if (/^(n|no|否|x|隱藏|隐藏|hide|false|0)$/i.test(hide)) return;
+    const it = { zh: zh || en, en: en || zh };
+    if (dZh) it.descZh = dZh;
+    if (dEn) it.descEn = dEn;
+    if (style.includes("素食")) it.veg = true;
+    if (style.includes("內嵌")) it.inl = true;
+    if (style.includes("分隔")) it.sep = true;
+    if (style.includes("拉開")) { it.sep = true; it.far = true; }
+    if (style.includes("框")) it.box = true;
+    if (subZh || subEn) it.sub = { zh: subZh || subEn, en: subEn || subZh };
+    if (c.cols) it.prices = [P(p1), P(p2)]; else it.price = P(p1);
+    c.items.push(it);
+  });
+  return cats.filter(c => c.items.length);
+}
+function loadSheet(){
+  if (!SHEET_CSV_URL) return;
+  try {
+    const cached = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
+    if (cached && cached.length) CONFIG.categories = cached;
+  } catch (e) {}
+  fetch(SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "_=" + Date.now(), { cache: "no-store" })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(t => {
+      const cats = buildFromRows(parseCSV(t));
+      if (!cats.length) return;
+      CONFIG.categories = cats;
+      try { localStorage.setItem("menu-sheet-cache", JSON.stringify(cats)); } catch (e) {}
+      render();
+    })
+    .catch(() => {});
+}
+
+loadSheet();
 render();
 </script>
 </body>
