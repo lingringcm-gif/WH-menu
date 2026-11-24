@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f7f3ea; --ink:#1c1c1a; --muted:#6a6a62; --line:#d9d3c3; --accent:#3f6663; --teal:#729391; --card:#fffdf8; --veg:#3aa68d; --gutter:28px;
+    --bg:#f7f3ea; --ink:#1c1c1a; --muted:#6a6a62; --line:#d9d3c3; --accent:#3f6663; --teal:#729391; --card:#fffdf8; --veg:#3aa68d; --gutter:28px; --pf:1.1rem;
     --body:Helvetica,"Helvetica Neue",Arial,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     --head-en:Montserrat,"Noto Sans TC",Helvetica,Arial,sans-serif;
     --head-zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
@@ -51,9 +51,12 @@
   .loading{color:var(--muted);text-align:center;padding:56px 0}
   .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
   .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
-  .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1.1rem;color:var(--accent);white-space:nowrap}
+  .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:var(--pf);color:var(--accent);white-space:nowrap}
   .multi{display:flex;flex-shrink:0}
-  .multi span,.cols span{display:block;width:4.2rem;text-align:center}
+  .multi span,.cols span{display:block;width:2.5rem}  /* 實際寬度由程式依價格位數計算 */
+  .multi span{text-align:right}
+  .cols span{text-align:center}
+  .multi span+span,.cols span+span{margin-left:.7rem}
   .cols{display:flex;flex-shrink:0;color:var(--ink);font:700 .85rem var(--body)}
   .subhead{margin-top:20px;padding-bottom:2px;color:var(--accent);font-weight:700;font-size:.95rem}
   html[lang="en"] .subhead{font-family:var(--head-en);font-size:.85rem}
@@ -74,15 +77,14 @@
     .logo{height:60px}
   }
   @media (max-width:480px){
-    :root{--gutter:20px}
+    :root{--gutter:20px;--pf:1rem}
     h2{font-size:1.2rem;gap:8px}
     .item{gap:8px}
     .name,.price{font-size:1rem}
     .inl{font-size:.8rem;margin-left:4px}
-    .multi span,.cols span{width:3.1rem}
     .tag{margin-left:6px}
   }
-  footer{padding:0 var(--gutter) 40px;color:var(--muted);font-size:.85rem}
+  footer{padding:0 var(--gutter) 40px;color:var(--muted);font-size:.85rem;text-align:center}
 </style>
 </head>
 <body>
@@ -229,7 +231,7 @@ try {
 function money(p){ return /^[\d.,]+$/.test(String(p)) ? CONFIG.currency + p : String(p); }
 function esc(s){return String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 
-function itemHtml(it, L, D){
+function itemHtml(it, L, D, w){
   return `
         ${it.sub ? `<div class="subhead">${esc(it.sub[L])}</div>` : ""}
         <div class="item${it.sep ? " sep" : ""}${it.far ? " far" : ""}">
@@ -237,21 +239,28 @@ function itemHtml(it, L, D){
             <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" && it.up && it["desc"+D] && !it.inl ? `<span class="desc mid">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
             ${it["desc"+D] && !it.inl && !(it.up && L === "en") ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
           </div>
-          ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(money(p))}</span>`).join("")}</div>` : `<div class="price">${it.price == null || it.price === "" ? "" : esc(money(it.price))}</div>`}
+          ${it.prices ? `<div class="price multi">${it.prices.map((p,j)=>`<span${w && w[j] ? ` style="width:calc(var(--pf)*${w[j]})"` : ""}>${p == null ? "" : esc(money(p))}</span>`).join("")}</div>` : `<div class="price">${it.price == null || it.price === "" ? "" : esc(money(it.price))}</div>`}
         </div>`;
 }
-function itemsHtml(items, L, D){
+function itemsHtml(items, L, D, w){
   let out = "", i = 0;
   while (i < items.length) {
     if (items[i].box) {
       let g = "";
-      while (i < items.length && items[i].box) { g += itemHtml(items[i], L, D); i++; }
+      while (i < items.length && items[i].box) { g += itemHtml(items[i], L, D, w); i++; }
       out += `<div class="box">${g}</div>`;
-    } else { out += itemHtml(items[i], L, D); i++; }
+    } else { out += itemHtml(items[i], L, D, w); i++; }
   }
   return out;
 }
 
+function colWidths(c, L){
+  if (!c.cols) return null;
+  return c.cols[L].map((_, j) => {
+    const mx = Math.max(2, ...c.items.map(it => it.prices && it.prices[j] != null ? money(it.prices[j]).length : 0));
+    return +(mx * 0.56 + 0.1).toFixed(2);
+  });
+}
 function render(){
   const L = lang, D = L === "zh" ? "Zh" : "En";
   document.documentElement.lang = L === "zh" ? "zh-Hant" : "en";
@@ -273,8 +282,8 @@ function render(){
 
   document.getElementById("menu").innerHTML = CONFIG.categories.map((c,i)=>`
     <section id="cat${i}">
-      <h2><span>${esc(c.name[L])}</span>${c.cols ? `<span class="cols">${c.cols[L].map(x=>`<span>${esc(x)}</span>`).join("")}</span>` : ""}</h2>
-      ${itemsHtml(c.items, L, D)}
+      <h2><span>${esc(c.name[L])}</span>${c.cols ? `<span class="cols">${c.cols[L].map((x,j)=>`<span style="width:calc(var(--pf)*${colWidths(c,L)[j]})">${esc(x)}</span>`).join("")}</span>` : ""}</h2>
+      ${itemsHtml(c.items, L, D, colWidths(c, L))}
     </section>`).join("");
 }
 
