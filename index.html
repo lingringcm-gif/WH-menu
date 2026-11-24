@@ -366,7 +366,7 @@ function buildFromRows(rows){
     const [catZh, catEn, zh, en, p1, p2, dZh, dEn, hide, style, colsZh, colsEn, subZh, subEn] = r.map(x => (x || "").trim());
     if (!catZh && !catEn) return;
     if (/^(公告|跑馬燈|announcement|marquee)$/i.test(catZh) || /^(announcement|marquee)$/i.test(catEn)) {
-      if ((zh || en) && !/^(n|no|否|x|隱藏|隐藏|hide|false|0)$/i.test(hide)) ann.push({ zh: zh || en, en: en || zh });
+      if ((zh || en) && /^(顯示|显示|show|y|yes|是|1|true)$/i.test(hide)) ann.push({ zh: zh || en, en: en || zh });   // 公告：要明確選「顯示」才會出現
       return;
     }
     const key = catZh + "|" + catEn;
