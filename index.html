@@ -211,6 +211,9 @@ const CONFIG = {
    把試算表「發布到網路」(CSV) 的網址貼在下面的引號裡。
    留空 = 只使用上面內建的菜單。
    ============================================================ */
+/* 即時讀取（優先使用）：試算表「一般存取權」需為「知道連結的任何人－檢視者」 */
+const SHEET_LIVE_CSV_URL = "https://docs.google.com/spreadsheets/d/15rACnz63nLBlESu2jx-zSkipeMI4541gjqS3PRzIADc/gviz/tq?tqx=out:csv&gid=1090735488&headers=1";
+/* 備用：「發布到網路」的 CSV 網址（即時讀取失敗時才使用） */
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDbvzO5IMg-_bfP5sc8e51YlVp1Z0VagaHOzdbV55NvUkKjluiZN-7YuzdqW0H4bA5zAomXeyBh0Bx/pub?gid=1090735488&single=true&output=csv";
 
 
@@ -346,15 +349,27 @@ function buildFromRows(rows){
   });
   return cats.filter(c => c.items.length);
 }
-let ready = !SHEET_CSV_URL;   // 有連動試算表時，先等讀到最新資料再顯示價格
-function loadSheet(){
-  if (!SHEET_CSV_URL) return;
+let ready = !(SHEET_LIVE_CSV_URL || SHEET_CSV_URL);   // 連動試算表時，先等讀到最新資料再顯示價格
+async function fetchCats(url){
+  const r = await fetch(url + (url.includes("?") ? "&" : "?") + "_=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error(r.status);
+  const text = await r.text();
+  if (/^\s*</.test(text)) throw new Error("not csv");        // 讀到登入頁或錯誤頁
+  const rows = parseCSV(text);
+  if (!rows[0] || rows[0].length < 9) throw new Error("bad header");
+  const cats = buildFromRows(rows);
+  if (!cats.length) throw new Error("empty");
+  return cats;
+}
+async function loadSheet(){
+  const urls = [SHEET_LIVE_CSV_URL, SHEET_CSV_URL].filter(Boolean);
+  if (!urls.length) return;
   const apply = cats => {
     CONFIG.categories = cats;
     try { localStorage.setItem("menu-sheet-cache", JSON.stringify(cats)); } catch (e) {}
     ready = true; render();
   };
-  const fallback = () => {            // 讀取失敗或太久：用上次成功的資料，再不行用內建菜單
+  const fallback = () => {            // 都讀不到：用上次成功的資料，再不行用內建菜單
     if (ready) return;
     try {
       const c = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
@@ -362,15 +377,11 @@ function loadSheet(){
     } catch (e) {}
     ready = true; render();
   };
-  const timer = setTimeout(fallback, 4000);
-  fetch(SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "_=" + Date.now(), { cache: "no-store" })
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-    .then(t => {
-      clearTimeout(timer);
-      const cats = buildFromRows(parseCSV(t));
-      if (cats.length) apply(cats); else fallback();
-    })
-    .catch(() => { clearTimeout(timer); fallback(); });
+  const timer = setTimeout(fallback, 5000);
+  for (const u of urls) {
+    try { const cats = await fetchCats(u); clearTimeout(timer); apply(cats); return; } catch (e) {}
+  }
+  clearTimeout(timer); fallback();
 }
 
 loadSheet();
