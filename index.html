@@ -48,6 +48,7 @@
   .item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
   .name{font-weight:400;font-size:1.1rem}
   .desc{color:var(--muted);font-size:.88rem;margin-top:2px}
+  .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
   .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
   .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1.1rem;color:var(--accent);white-space:nowrap}
   .multi{display:flex;flex-shrink:0}
@@ -136,7 +137,7 @@ const CONFIG = {
       name: { zh: "台味食堂", en: "Taiwanese Kitchen" },
       items: [
         { zh: "家常牛肉麵",   en: "Classic Taiwanese Beef Noodles",    price: 200 },
-        { zh: "肉燥飯套餐",   en: "Minced Pork Rice Set", descZh: "含虱目魚肚湯", descEn: "with Milkfish Belly Soup", price: 150 },
+        { zh: "肉燥飯套餐",   en: "Minced Pork Rice Set", descZh: "含虱目魚肚湯", descEn: "with Milkfish Belly Soup", up: true, price: 150 },
         { zh: "肉燥什錦湯麵", en: "Minced Pork Assorted Soup Noodles", price: 90 },
         { zh: "肉燥飯",       en: "Minced Pork Rice",                  price: 60 },
         { zh: "水餃(10顆)", en: "Dumplings (10 pcs)",                price: 60 },
@@ -229,8 +230,8 @@ function itemHtml(it, L, D){
         ${it.sub ? `<div class="subhead">${esc(it.sub[L])}</div>` : ""}
         <div class="item${it.sep ? " sep" : ""}${it.far ? " far" : ""}">
           <div>
-            <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
-            ${it["desc"+D] && !it.inl ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
+            <div class="name">${esc(it[L])}${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" && it.up && it["desc"+D] && !it.inl ? `<span class="desc mid">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
+            ${it["desc"+D] && !it.inl && !(it.up && L === "en") ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
           </div>
           ${it.prices ? `<div class="price multi">${it.prices.map(p=>`<span>${p == null ? "" : esc(money(p))}</span>`).join("")}</div>` : `<div class="price">${it.price == null || it.price === "" ? "" : esc(money(it.price))}</div>`}
         </div>`;
@@ -331,6 +332,7 @@ function buildFromRows(rows){
     if (style.includes("分隔")) it.sep = true;
     if (style.includes("拉開")) { it.sep = true; it.far = true; }
     if (style.includes("框")) it.box = true;
+    if (style.includes("說明在上")) it.up = true;
     if (subZh || subEn) it.sub = { zh: subZh || subEn, en: subEn || subZh };
     if (c.cols) it.prices = [P(p1), P(p2)]; else it.price = P(p1);
     c.items.push(it);
