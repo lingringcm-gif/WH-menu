@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f7f3ea; --ink:#1c1c1a; --muted:#6a6a62; --line:#d9d3c3; --accent:#3f6663; --teal:#729391; --card:#fffdf8; --veg:#3aa68d; --gutter:28px; --pf:1.1rem;
+    --bg:#f7f3ea; --ink:#1c1c1a; --muted:#6a6a62; --line:#d9d3c3; --accent:#3f6663; --teal:#729391; --card:#fffdf8; --veg:#3aa68d; --gutter:1.4rem; --pf:1rem;
     --body:Helvetica,"Helvetica Neue",Arial,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     --head-en:Montserrat,"Noto Sans TC",Helvetica,Arial,sans-serif;
     --head-zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:110px}
+  html{scroll-behavior:smooth;scroll-padding-top:7rem;-webkit-text-size-adjust:100%;font-size:clamp(13px,calc(min(100vw,480px)*.041),19px)}
   html{background:#e4dfd2}
   body{margin:0 auto;max-width:480px;min-height:100vh;box-shadow:0 0 0 1px var(--line);background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:400;line-height:1.6}
   header{background:var(--teal);color:#fff}
-  .hin{padding:24px var(--gutter);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center}
+  .hin{padding:1.5rem var(--gutter);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center}
   .hin > div:first-child{grid-column:2}
   .hin .lang{grid-column:3;justify-self:end}
   h1,h2{font-weight:700}
@@ -27,37 +27,37 @@
   html[lang="zh-Hant"] h1,html[lang="zh-Hant"] h2{font-family:var(--head-zh)}
   h1{font-size:1.9rem;margin:0;line-height:1.2}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .logo{display:block;height:88px;width:auto;margin:0 auto}
+  .logo{display:block;height:4.6rem;width:auto;margin:0 auto}
   .sub{color:#e3ecea;font-size:.95rem;margin-top:6px}
   .lang{display:flex;border:1.5px solid #fff;border-radius:999px;overflow:hidden;flex-shrink:0}
-  .lang button{border:0;background:transparent;color:#fff;padding:6px 10px;font:400 .85rem var(--body);cursor:pointer}
+  .lang button{border:0;background:transparent;color:#fff;padding:.35rem .6rem;font:400 .8rem var(--body);cursor:pointer}
   .lang button[aria-pressed="true"]{background:#fff;color:var(--accent)}
   .lang button:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
   nav a:focus-visible{outline:3px solid var(--ink);outline-offset:1px}
   nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-  nav div{display:flex;gap:8px;overflow-x:auto;padding:12px var(--gutter);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  nav div{display:flex;gap:.5rem;overflow-x:auto;padding:.75rem var(--gutter);scrollbar-width:none;-webkit-overflow-scrolling:touch}
   nav div::-webkit-scrollbar{display:none}
   nav div{cursor:grab;user-select:none;-webkit-user-select:none;overscroll-behavior-x:contain}
   nav div.dragging{cursor:grabbing}
   nav a{-webkit-user-drag:none}
-  nav::after{content:"";position:absolute;top:0;right:0;bottom:0;width:32px;background:linear-gradient(to right,rgba(247,243,234,0),var(--bg));pointer-events:none}
-  nav a{flex:0 0 auto;white-space:nowrap;line-height:1.4;text-decoration:none;color:var(--ink);padding:6px 14px;border:1px solid var(--line);border-radius:999px;font-size:.9rem;background:var(--card)}
-  main{padding:8px var(--gutter) 56px}
-  section{margin-top:32px}
-  h2{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:1.35rem;margin:0 0 6px;padding-bottom:8px;border-bottom:2px solid var(--teal)}
-  .item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
-  .name{font-weight:400;font-size:1.1rem}
-  .desc{color:var(--muted);font-size:.88rem;margin-top:2px}
+  nav::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2rem;background:linear-gradient(to right,rgba(247,243,234,0),var(--bg));pointer-events:none}
+  nav a{flex:0 0 auto;white-space:nowrap;line-height:1.4;text-decoration:none;color:var(--ink);padding:.4rem .9rem;border:1px solid var(--line);border-radius:999px;font-size:.9rem;background:var(--card)}
+  main{padding:.5rem var(--gutter) 3.5rem}
+  section{margin-top:2rem}
+  h2{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:1.2rem;margin:0 0 .4rem;padding-bottom:.5rem;border-bottom:2px solid var(--teal)}
+  .item{display:flex;justify-content:space-between;gap:.5rem;padding:.9rem 0;border-bottom:1px solid var(--line)}
+  .name{font-weight:400;font-size:1rem}
+  .desc{color:var(--muted);font-size:.88rem;margin-top:.125rem}
   .banner{background:var(--accent);color:#fff;overflow:hidden;white-space:nowrap;font-size:.92rem;line-height:1.2}
   .banner[hidden]{display:none}
-  .banner .track{display:flex;width:max-content;padding:10px 0;animation:marquee 20s linear infinite}
+  .banner .track{display:flex;width:max-content;padding:.65rem 0;animation:marquee 20s linear infinite}
   .banner .grp{display:flex;flex-shrink:0}
   .banner .unit{padding-right:3rem}
   .banner:hover .track,.banner:active .track{animation-play-state:paused}
   @keyframes marquee{to{transform:translateX(-50%)}}
   @media (prefers-reduced-motion:reduce){
     .banner{white-space:normal;text-align:center}
-    .banner .track{animation:none;width:auto;display:block;padding:10px var(--gutter)}
+    .banner .track{animation:none;width:auto;display:block;padding:.65rem var(--gutter)}
     .banner .grp+.grp{display:none}
     .banner .unit{padding:0}
   }
@@ -70,7 +70,7 @@
   @keyframes splashOut{to{opacity:0;visibility:hidden}}
   @media (prefers-reduced-motion:reduce){.splash p{animation:none}}
   .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
-  .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
+  .inl{color:var(--muted);font-size:.8rem;margin-left:.3rem;white-space:nowrap}
   .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:var(--pf);color:var(--accent);white-space:nowrap}
   .multi{display:flex;flex-shrink:0}
   .multi span,.cols span{display:block;width:2.5rem}  /* 實際寬度由程式依價格位數計算 */
@@ -78,33 +78,17 @@
   .cols span{text-align:center}
   .multi span+span,.cols span+span{margin-left:.7rem}
   .cols{display:flex;flex-shrink:0;color:var(--ink);font:700 .85rem var(--body)}
-  .subhead{margin-top:20px;padding-bottom:2px;color:var(--accent);font-weight:700;font-size:.95rem}
+  .subhead{margin-top:1.25rem;padding-bottom:.125rem;color:var(--accent);font-weight:700;font-size:.95rem}
   html[lang="en"] .subhead{font-family:var(--head-en);font-size:.85rem}
-  .tag{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:400;color:#fff;background:var(--veg);border-radius:4px;padding:1px 7px;vertical-align:middle}
+  .tag{display:inline-block;margin-left:.4rem;font-size:.72rem;font-weight:400;color:#fff;background:var(--veg);border-radius:.25rem;padding:.06rem .45rem;vertical-align:middle}
   .zhn{display:block;font-size:.9rem;line-height:1.4;color:#4d4d47;margin-top:1px}
-  html[lang="en"] .tag{display:table;margin:5px 0 0}
-  .item.sep{margin-top:14px;border-top:1px dashed var(--line)}
-  .item.far{margin-top:44px}
-  .box{margin-top:22px;padding:2px 18px 4px;border:1.5px solid var(--teal);border-radius:18px;background:rgba(114,147,145,.12)}
+  html[lang="en"] .tag{display:table;margin:.3rem 0 0}
+  .item.sep{margin-top:.9rem;border-top:1px dashed var(--line)}
+  .item.far{margin-top:2.75rem}
+  .box{margin-top:1.4rem;padding:.1rem 1.1rem .25rem;border:1.5px solid var(--teal);border-radius:1.1rem;background:rgba(114,147,145,.12)}
   .box .item:last-child{border-bottom:0}
-  .box .subhead{margin-top:14px}
-  @media (max-width:420px){
-    .logo{height:72px}
-    .lang button{padding:5px 8px;font-size:.8rem}
-  }
-  @media (max-width:350px){
-    :root{--gutter:20px}
-    .logo{height:60px}
-  }
-  @media (max-width:480px){
-    :root{--gutter:20px;--pf:1rem}
-    h2{font-size:1.2rem;gap:8px}
-    .item{gap:8px}
-    .name,.price{font-size:1rem}
-    .inl{font-size:.8rem;margin-left:4px}
-    .tag{margin-left:6px}
-  }
-  footer{padding:0 var(--gutter) 40px;color:var(--muted);font-size:.85rem;text-align:center}
+  .box .subhead{margin-top:.9rem}
+  footer{padding:0 var(--gutter) 2.5rem;color:var(--muted);font-size:.85rem;text-align:center}
 </style>
 </head>
 <body>
