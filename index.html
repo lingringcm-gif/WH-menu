@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" class="is-loading">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -61,7 +61,14 @@
     .banner .grp+.grp{display:none}
     .banner .unit{padding:0}
   }
-  .loading{color:var(--muted);text-align:center;padding:56px 0}
+  html.is-loading{overflow:hidden}
+  .splash{position:fixed;inset:0;z-index:1000;background:var(--teal);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(56px,13vh,120px);transition:opacity .35s ease,visibility .35s;animation:splashOut .01s linear 9s forwards}
+  .splash.gone{opacity:0;visibility:hidden}
+  .splash-logo{display:block;width:min(46vw,190px);height:auto;margin-top:-6vh}
+  .splash p{margin:0;font-weight:700;font-size:1rem;letter-spacing:.08em;animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.55}}
+  @keyframes splashOut{to{opacity:0;visibility:hidden}}
+  @media (prefers-reduced-motion:reduce){.splash p{animation:none}}
   .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
   .inl{color:var(--muted);font-size:.88rem;margin-left:6px;white-space:nowrap}
   .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:var(--pf);color:var(--accent);white-space:nowrap}
@@ -102,6 +109,7 @@
 </head>
 <body>
 
+<div id="splash" class="splash" role="status" aria-live="polite"><img class="splash-logo" alt="White Hall Cafeteria"><p id="splashText"></p></div>
 <div id="banner" class="banner" hidden><div class="track"></div></div>
 <header><div class="hin">
   <div>
@@ -233,6 +241,15 @@ const SHEET_LIVE_CSV_URL = "https://docs.google.com/spreadsheets/d/15rACnz63nLBl
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDbvzO5IMg-_bfP5sc8e51YlVp1Z0VagaHOzdbV55NvUkKjluiZN-7YuzdqW0H4bA5zAomXeyBh0Bx/pub?gid=1090735488&single=true&output=csv";
 
 
+const T0 = Date.now();
+document.getElementById("splash").firstElementChild.src = document.querySelector(".logo").src;
+function hideSplash(){
+  const sp = document.getElementById("splash");
+  if (sp.classList.contains("gone")) return;
+  setTimeout(() => { sp.classList.add("gone"); document.documentElement.classList.remove("is-loading"); },
+             Math.max(0, 700 - (Date.now() - T0)));
+}
+
 let lang = "zh";
 try {
   const saved = localStorage.getItem("menu-lang");
@@ -287,9 +304,11 @@ function render(){
 
   if (!ready) {
     document.getElementById("nav").innerHTML = "";
-    document.getElementById("menu").innerHTML = `<p class="loading">${L === "zh" ? "菜單載入中…" : "Loading menu…"}</p>`;
+    document.getElementById("menu").innerHTML = "";
+    document.getElementById("splashText").textContent = L === "zh" ? "菜單載入中…" : "Loading menu…";
     return;
   }
+  hideSplash();
 
   const banner = document.getElementById("banner");
   const msgs = (CONFIG.announcements || []).map(a => a[L]).filter(Boolean);
