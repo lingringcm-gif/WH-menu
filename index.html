@@ -235,9 +235,9 @@ const CONFIG = {
    留空 = 只使用上面內建的菜單。
    ============================================================ */
 /* 即時讀取（優先使用）：試算表「一般存取權」需為「知道連結的任何人－檢視者」 */
-const SHEET_LIVE_CSV_URL = "https://docs.google.com/spreadsheets/d/15rACnz63nLBlESu2jx-zSkipeMI4541gjqS3PRzIADc/gviz/tq?tqx=out:csv&gid=1090735488&headers=1";
-/* 備用：「發布到網路」的 CSV 網址（即時讀取失敗時才使用） */
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDbvzO5IMg-_bfP5sc8e51YlVp1Z0VagaHOzdbV55NvUkKjluiZN-7YuzdqW0H4bA5zAomXeyBh0Bx/pub?gid=1090735488&single=true&output=csv";
+const SHEET_LIVE_CSV_URL = "https://docs.google.com/spreadsheets/d/15rACnz63nLBlESu2jx-zSkipeMI4541gjqS3PRzIADc/gviz/tq?tqx=out:csv&sheet=WH&headers=1";
+/* 備用網址：已停用（舊的發布連結只會顯示舊資料） */
+const SHEET_CSV_URL = "";
 
 
 const T0 = Date.now();
@@ -436,13 +436,13 @@ async function loadSheet(){
   if (!urls.length) return;
   const apply = res => {
     CONFIG.categories = res.cats; CONFIG.announcements = res.ann;
-    try { localStorage.setItem("menu-sheet-cache", JSON.stringify({ c: res.cats, a: res.ann })); } catch (e) {}
+    try { localStorage.setItem("menu-sheet-cache-wh", JSON.stringify({ c: res.cats, a: res.ann })); } catch (e) {}
     ready = true; render();
   };
   const fallback = () => {            // 都讀不到：用上次成功的資料，再不行用內建菜單
     if (ready) return;
     try {
-      const c = JSON.parse(localStorage.getItem("menu-sheet-cache") || "null");
+      const c = JSON.parse(localStorage.getItem("menu-sheet-cache-wh") || "null");
       if (c && c.c && c.c.length) { CONFIG.categories = c.c; CONFIG.announcements = c.a || []; }
     } catch (e) {}
     ready = true; render();
