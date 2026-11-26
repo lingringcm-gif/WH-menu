@@ -45,11 +45,11 @@
   main{padding:.5rem var(--gutter) 3.5rem}
   section{margin-top:2rem}
   h2{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:1.2rem;margin:0 0 .4rem;padding-bottom:.5rem;border-bottom:2px solid var(--teal)}
-  .item{display:flex;justify-content:space-between;gap:.5rem;padding:.9rem 0;border-bottom:1px solid var(--line)}
+  .item{display:flex;justify-content:space-between;gap:1rem;padding:.9rem 0;border-bottom:1px solid var(--line)}
   .name{font-weight:400;font-size:1rem}
   .item > div:first-child{flex:1;min-width:0}
   .nm{white-space:nowrap}
-  .desc{color:var(--muted);font-size:.88rem;margin-top:.125rem}
+  .desc{color:var(--muted);font-size:.88rem;margin-top:.125rem;line-height:1.25}
   .banner{background:var(--accent);color:#fff;overflow:hidden;white-space:nowrap;font-size:.92rem;line-height:1.2}
   .banner[hidden]{display:none}
   .banner .track{display:flex;width:max-content;padding:.65rem 0;animation:marquee 20s linear infinite}
@@ -75,8 +75,8 @@
   @keyframes pulse{50%{opacity:.55}}
   @keyframes splashOut{to{opacity:0;visibility:hidden}}
   @media (prefers-reduced-motion:reduce){.splash p{animation:none}}
-  .desc.mid{display:block;margin:1px 0 0;line-height:1.4}
-  .inl{color:var(--muted);font-size:.8rem;margin-left:.3rem;white-space:nowrap}
+  .desc.mid{display:block;margin:1px 0 0;line-height:1.2}
+  .inl{color:var(--muted);font-size:.8rem;margin-left:0;white-space:nowrap}
   .price{font-family:Helvetica,"Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:var(--pf);color:var(--accent);white-space:nowrap}
   .multi{display:flex;flex-shrink:0}
   .multi span,.cols span{display:block;width:2.5rem}  /* 實際寬度由程式依價格位數計算 */
@@ -265,7 +265,7 @@ function itemHtml(it, L, D, w){
         ${it.sub ? `<div class="subhead">${esc(it.sub[L])}</div>` : ""}
         <div class="item${it.sep ? " sep" : ""}${it.far ? " far" : ""}">
           <div>
-            <div class="name"><span class="nm">${esc(it[L])}</span>${it.inl && it["desc"+D] ? `<span class="inl">${esc(it["desc"+D])}</span>` : ""}${L === "en" && it.up && it["desc"+D] && !it.inl ? `<span class="desc mid">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
+            <div class="name"><span class="nm">${esc(it[L])}</span>${it.inl && it["desc"+D] ? ` <span class="inl">${esc(it["desc"+D]).replace(/\s*\/\s*/g, " / ")}</span>` : ""}${L === "en" && it.up && it["desc"+D] && !it.inl ? `<span class="desc mid">${esc(it["desc"+D])}</span>` : ""}${L === "en" ? `<span class="zhn">${esc(it.zh)}</span>` : ""}${it.veg ? `<span class="tag">${L === "zh" ? "素食" : "Vegetarian"}</span>` : ""}</div>
             ${it["desc"+D] && !it.inl && !(it.up && L === "en") ? `<div class="desc">${esc(it["desc"+D])}</div>` : ""}
           </div>
           ${it.prices ? `<div class="price multi">${it.prices.map((p,j)=>`<span${w && w[j] ? ` style="width:calc(var(--pf)*${w[j]})"` : ""}>${p == null ? "" : esc(money(p))}</span>`).join("")}</div>` : `<div class="price">${it.price == null || it.price === "" ? "" : esc(money(it.price))}</div>`}
@@ -297,7 +297,7 @@ function fitNames(){
     const avail = n.clientWidth, w = nm.getBoundingClientRect().width;
     if (!avail || w <= avail) return;
     const k = avail / w;
-    if (k >= 0.78) nm.style.fontSize = (k * 0.98 * 100).toFixed(1) + "%";
+    if (k >= 0.78) nm.style.fontSize = (k * 0.95 * 100).toFixed(1) + "%";
     else { nm.style.fontSize = "80%"; nm.style.whiteSpace = "normal"; }
   });
 }
