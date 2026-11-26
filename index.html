@@ -104,6 +104,12 @@
   .lang{padding:2px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
   .lang button{border-radius:999px;color:#fff;font-weight:500;text-shadow:none}
   .lang button[aria-pressed="true"]{color:var(--accent);background:rgba(255,255,255,.88);box-shadow:inset 0 0 6px rgba(255,255,255,.6)}
+  /* ---- 果凍開關：滑塊移動時會拉長、再回彈 ---- */
+  .lang{position:relative}
+  .lang button{position:relative;z-index:1;transition:color .25s ease}
+  .lang .thumb{position:absolute;top:2px;bottom:2px;left:0;width:0;z-index:0;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:inset 0 0 6px rgba(255,255,255,.6),0 2px 8px rgba(0,0,0,.18);transform-origin:center}
+  .lang button[aria-pressed="true"]{background:transparent;box-shadow:none}
+  .gaNote{display:block;margin-top:.4rem;font-size:.75rem;opacity:.8}
 </style>
 </head>
 <body>
@@ -116,6 +122,7 @@
     <h1 id="title" class="sr"></h1>
   </div>
   <div class="lang" role="group" aria-label="Language">
+    <span class="thumb"></span>
     <button type="button" data-lang="zh" aria-pressed="true">中文</button>
     <button type="button" data-lang="en" aria-pressed="false">English</button>
   </div>
@@ -240,6 +247,23 @@ const SHEET_LIVE_CSV_URL = "https://docs.google.com/spreadsheets/d/15rACnz63nLBl
 const SHEET_CSV_URL = "";
 
 
+/* ============================================================
+   📊 Google Analytics 4 統計
+   把衡量 ID（長得像 G-XXXXXXXXXX）貼在 GA_ID 的引號裡。留空 = 不統計。
+   ============================================================ */
+const GA_ID = "G-LQZYHR9PE7";
+const SHOP = "WH";
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+function track(name, params){ if (GA_ID) gtag("event", name, Object.assign({ shop: SHOP }, params || {})); }
+if (GA_ID) {
+  const gs = document.createElement("script");
+  gs.async = true; gs.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+  document.head.appendChild(gs);
+  gtag("js", new Date()); gtag("config", GA_ID, { shop: SHOP });
+}
+let loadedSent = false;
+
 const T0 = Date.now();
 function hideSplash(){
   const sp = document.getElementById("splash");
@@ -283,6 +307,26 @@ function itemsHtml(items, L, D, w){
   return out;
 }
 
+let jelly = false, thumbPos = null;
+function placeThumb(animate){
+  const box = document.querySelector(".lang");
+  if (!box || !box.querySelector) return;
+  const th = box.querySelector(".thumb"), on = box.querySelector('button[aria-pressed="true"]');
+  if (!th || !on) return;
+  const l = on.offsetLeft, w = on.offsetWidth;
+  const calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (animate && !calm && thumbPos && thumbPos.l !== l && th.animate) {
+    const right = l > thumbPos.l, p = thumbPos, x = 5;                 // 滑塊先往目標方向拉長
+    const sl = right ? p.l : l - x, sw = right ? l + w - p.l + x : p.l + p.w - l + x;
+    th.animate([
+      { left: p.l + "px", width: p.w + "px", transform: "scale(1,1)", easing: "cubic-bezier(.4,0,.2,1)" },
+      { left: sl + "px", width: sw + "px", transform: "scale(1.02,.84)", offset: 0.42, easing: "cubic-bezier(.3,1.7,.55,1)" },
+      { left: l + "px", width: w + "px", transform: "scale(1,1)" }
+    ], { duration: 620 });
+  }
+  th.style.left = l + "px"; th.style.width = w + "px";
+  thumbPos = { l, w };
+}
 function colWidths(c, L){
   if (!c.cols) return null;
   return c.cols[L].map((_, j) => {
@@ -306,10 +350,11 @@ function render(){
   document.documentElement.lang = L === "zh" ? "zh-Hant" : "en";
   document.title = CONFIG.title[L] + (L === "zh" ? " 菜單" : " Menu");
   document.getElementById("title").textContent = CONFIG.title[L];
-  document.getElementById("note").textContent = CONFIG.note[L];
+  document.getElementById("note").innerHTML = esc(CONFIG.note[L]) + (GA_ID ? `<span class="gaNote">${L === "zh" ? "本頁使用 Google Analytics 進行匿名瀏覽統計。" : "This page uses Google Analytics for anonymous visit statistics."}</span>` : "");
 
   document.querySelectorAll(".lang button").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.lang === L ? "true" : "false"));
+  placeThumb(jelly); jelly = false;
 
   if (!ready) {
     document.getElementById("nav").innerHTML = "";
@@ -318,6 +363,7 @@ function render(){
     return;
   }
   hideSplash();
+  if (!loadedSent) { loadedSent = true; track("menu_loaded", { language: L }); }
 
   const banner = document.getElementById("banner");
   const msgs = (CONFIG.announcements || []).map(a => a[L]).filter(Boolean);
@@ -334,7 +380,7 @@ function render(){
   }
 
   document.getElementById("nav").innerHTML = CONFIG.categories
-    .map((c,i)=>`<a href="#cat${i}">${esc(c.name[L])}</a>`).join("");
+    .map((c,i)=>`<a href="#cat${i}" data-cat="${esc(c.name.en)}">${esc(c.name[L])}</a>`).join("");
 
   document.getElementById("menu").innerHTML = CONFIG.categories.map((c,i)=>`
     <section id="cat${i}">
@@ -345,7 +391,9 @@ function render(){
 }
 
 document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => {
-  lang = b.dataset.lang;
+  if (b.dataset.lang === lang) return;
+  lang = b.dataset.lang; jelly = true;
+  track("language_switch", { language: lang });
   try { localStorage.setItem("menu-lang", lang); } catch (e) {}
   render();
 }));
@@ -455,7 +503,12 @@ async function loadSheet(){
 }
 
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
-window.addEventListener("resize", fitNames);
+document.getElementById("nav").addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("a");
+  if (a && a.dataset.cat) track("category_click", { category: a.dataset.cat });
+});
+window.addEventListener("resize", () => { fitNames(); placeThumb(false); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => placeThumb(false));
 loadSheet();
 render();
 </script>
